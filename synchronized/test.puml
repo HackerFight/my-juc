@@ -1,0 +1,47 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+title qiuguan 测试
+
+
+
+skinparam sequence {
+   ArrowColor black
+   LifeLineBorderColor red
+   ParticipantBorderColor blue
+   ParticipantBackgroundColor mediumturquoise
+}
+
+skinparam note {
+   BorderColor black
+}
+
+actor User as user
+participant LoginService as "LoginService" #deepskyblue
+participant OauthService as "OauthService"
+participant MemberService as "MemberService"
+participant PermissionService as PermissionService
+'participant
+
+autonumber "<b>[0]"
+== Main Process ==
+
+user -> LoginService: login
+
+LoginService -> OauthService: oauth
+activate OauthService
+  activate MemberService #gold
+   OauthService -> MemberService: queryMain
+      group InitViewProcess
+        MemberService --> PermissionService: permission
+        activate PermissionService
+          PermissionService -> PermissionService: check
+          PermissionService --> MemberService: validate
+      end group
+   MemberService -> OauthService: return
+   deactivate OauthService
+   OauthService -> LoginService: return
+   LoginService --> user: success
+
+'permissionService --> MemberService
+
+@enduml
